@@ -87,7 +87,7 @@ package set used to build `epkgs`; the epkgs scope does not expose it.
 The list of pinned languages comes directly from `pins.nix`:
 
 ```sh
-nix eval github:judaew/emacs-treesit-grammars#lib.languages --json | jq -r '.[]'
+nix eval 'github:judaew/emacs-treesit-grammars#lib.languages' --json | jq -r '.[]'
 ```
 
 ### Verifying that pins are in use
