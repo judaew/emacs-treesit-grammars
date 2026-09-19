@@ -30,7 +30,8 @@ jobs:
       - name: Checks the pinned grammars in bundle
         run: |
           out=$(nix build -L ".#emacs-treesit-bundle" --print-out-paths)
-          for f in "$out"/lib/libtree-sitter-*.so; do
+          ls -la "$out/lib"
+          for f in "$out"/lib/libtree-sitter-*; do
             readlink "$f" | grep -q -- '-emacs' || {
               echo "NOT pinned: $(basename "$f") -> $(readlink "$f")"
               exit 1
