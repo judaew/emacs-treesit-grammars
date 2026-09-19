@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+
+jobs:
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        # x86_64-linux, aarch64-darwin
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cachix/install-nix-action@v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Patch nix.conf (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          mkdir -p ~/.config/nix
+          echo "sandbox = relaxed" >> ~/.config/nix/nix.conf
+
+      - name: Flake check (eval + build all grammars + bundle)
+        run: nix flake check --all-systems -L
+
+      - name: Checks the pinned grammars in bundle
+        run: |
+          out=$(nix build -L ".#emacs-treesit-bundle" --print-out-paths)
+          for f in "$out"/lib/libtree-sitter-*.so; do
+            readlink "$f" | grep -q -- '-emacs' || {
+              echo "NOT pinned: $(basename "$f") -> $(readlink "$f")"
+              exit 1
+            }
+          done
+          echo "all $(ls "$out/lib" | wc -l) grammars pinned"

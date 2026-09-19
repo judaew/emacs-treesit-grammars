@@ -22,7 +22,7 @@ let
     or stock.${lang}
     or (throw "emacs-treesit-grammars: '${lang}' isn't in pins or stock set")) languages;
 in {
-  inherit pins grammars;
+  inherit pins grammars pick;
 
   languages = attrNames pins;
 
