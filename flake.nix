@@ -5,15 +5,26 @@
 
   outputs = { self, nixpkgs }:
   let
-    systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
+    systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
     forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
   in
   {
     lib = import ./lib.nix (import ./pins.nix);
 
-    # nix build .#tree-sitter-rust
-    # nix flake check
-    packages = forAllSystems (pkgs: self.lib.grammars pkgs);
+
+    # This is used for CI checks, here is an example for manual
+    # checks:
+    # 1. nix flake check --all-systems -L
+    # 2. nix build -L ".#emacs-treesit-bundle" --print-out-paths
+    packages = forAllSystems (pkgs:
+    (self.lib.grammars pkgs) // {
+      emacs-treesit-bundle =
+        self.lib.withGrammars {
+          pkgs = pkgs;
+          epkgs = pkgs.emacsPackagesFor pkgs.emacs-nox;
+        };
+      }
+    );
     checks = self.packages;
   };
 }
