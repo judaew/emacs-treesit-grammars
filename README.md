@@ -40,12 +40,12 @@ services.emacs = {
             # `languages` is optional
             # By default, all pinned grammars are included.
 
-            # Pins + stock nixpkgs grammars:
+            # Or pins + stock nixpkgs grammars:
             languages = inputs.emacs-treesit-grammars.lib.languages ++ [
                 "tree-sitter-nix"
             ];
 
-            # A subset:
+            # Or a subset:
             languages = [ "tree-sitter-rust" ];
         })
     ]);
