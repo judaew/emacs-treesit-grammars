@@ -28,7 +28,7 @@ grammars use the same nixpkgs revision as the Emacs package.
 
 Use it in your Emacs package:
 
-```
+```nix
 { inputs, pkgs, ... }:
 
 services.emacs = {
@@ -137,7 +137,7 @@ that expects the previous tree structure.
 
 For example, an Emacs mode may contain a query like:
 
-```emacs-lisp
+```lisp
 (treesit-query-capture
         parser
         '((call_expression
